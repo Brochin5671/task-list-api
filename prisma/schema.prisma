@@ -1,0 +1,21 @@
+datasource db {
+    provider = "sqlite"
+    url      = env("DATABASE_URL")
+}
+
+// Using prisma-client-js (classic) for zero-config, the newer prisma-client requires an explicit output path
+generator client {
+    provider = "prisma-client-js"
+}
+
+generator pothos {
+    provider = "prisma-pothos-types"
+}
+
+model Task {
+    id        String   @id @default(cuid())
+    title     String
+    completed Boolean  @default(false)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
