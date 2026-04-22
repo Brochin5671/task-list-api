@@ -1,6 +1,6 @@
 # Task List API
 
-A GraphQL API for managing tasks. Built with TypeScript, GraphQL Yoga, Pothos, Prisma, and Zod.
+A GraphQL API for managing tasks. Built with NodeJS, TypeScript, Yoga GQL, Prisma, Pothos GraphQL, and Zod.
 
 ## Prerequisites
 
@@ -10,6 +10,8 @@ A GraphQL API for managing tasks. Built with TypeScript, GraphQL Yoga, Pothos, P
 ## Getting Started
 
 ```bash
+git clone <repo-url>
+cd task-list-api
 npm install
 cp .env.example .env
 npm run setup
@@ -29,11 +31,11 @@ The server listens on the port set by `PORT` in `.env` (default `4000`). GraphiQ
 
 ### Mutations
 
-- `addTask(input: AddTaskInput!): Task!`
-- `toggleTask(id: ID!): Task!`
-- `deleteTask(id: ID!): Task!`
-- `updateTask(id: ID!, input: UpdateTaskInput!): Task!`
-- `clearCompleted: Int!`
+- `addTask(input: AddTaskInput!): Task!` creates a new task
+- `toggleTask(id: ID!): Task!` flips the completed state
+- `deleteTask(id: ID!): Task!` removes a task and returns the deleted row
+- `updateTask(id: ID!, input: UpdateTaskInput!): Task!` updates title and/or completed (bonus)
+- `clearCompleted: Int!` deletes all completed tasks and returns the count (bonus)
 
 ### Examples
 
@@ -115,6 +117,16 @@ mutation {
 }
 ```
 
+## Design Choices
+
+- **cuid2 IDs**: URL-safe, collision-resistant, no leaky host fingerprint (unlike cuid v1).
+- **Prisma 7 new client generator**: pure ESM, smaller bundle, faster queries than the classic `prisma-client-js` generator.
+- **Context pattern**: resolvers access Prisma via `ctx.prisma`, not direct imports. Scales to auth and request-scoped loaders.
+- **Pothos `prismaField` with query spread**: passes Pothos's nested-selection `query` into Prisma's `select`/`include`, avoiding N+1 on nested reads.
+- **Inline Zod validation via plugin-zod**: validators live at the argument and input-field level. Cross-field rules (like `UpdateTaskInput`'s "at least one field") use a top-level Zod schema with `.refine()`.
+- **Pre-check null pattern for not-found errors**: mutations that need a target row do `findUnique` first and throw a typed `NOT_FOUND` GraphQLError if missing. Avoids hard-coding Prisma error codes like `P2025`.
+- **Strict TypeScript + ESLint `eqeqeq`**: `tsconfig` has `strict`, `noUncheckedIndexedAccess`, `verbatimModuleSyntax`. ESLint forbids loose equality.
+
 ## Scripts
 
 - `npm run dev` starts the server with live reload
@@ -148,4 +160,4 @@ prisma.config.ts     Prisma config (datasource URL)
 
 ## License
 
-MIT
+[MIT](https://opensource.org/licenses/MIT)
