@@ -120,57 +120,59 @@ builder.mutationType({
         }),
       },
       resolve: async (query, _root, args, ctx) => {
-        try {
-          return await ctx.prisma.task.delete({
-            ...query,
-            where: { id: String(args.id) },
-          });
-        } catch {
+        const id = String(args.id);
+        const existing = await ctx.prisma.task.findUnique({
+          where: { id },
+          select: { id: true },
+        });
+        if (!existing) {
           throw new GraphQLError('Task not found', {
             extensions: { code: 'NOT_FOUND' },
           });
         }
+        return ctx.prisma.task.delete({ ...query, where: { id } });
       },
     }),
-  }),
-});
-
-builder.mutationFields((t) => ({
-  updateTask: t.prismaField({
-    type: 'Task',
-    args: {
-      id: t.arg.id({
-        required: true,
-        validate: { schema: z.cuid2() },
-      }),
-      input: t.arg({ type: UpdateTaskInput, required: true }),
-    },
-    resolve: async (query, _root, args, ctx) => {
-      const title = args.input.title?.trim();
-      const completed = args.input.completed ?? undefined;
-      try {
-        return await ctx.prisma.task.update({
+    updateTask: t.prismaField({
+      type: 'Task',
+      args: {
+        id: t.arg.id({
+          required: true,
+          validate: { schema: z.cuid2() },
+        }),
+        input: t.arg({ type: UpdateTaskInput, required: true }),
+      },
+      resolve: async (query, _root, args, ctx) => {
+        const id = String(args.id);
+        const existing = await ctx.prisma.task.findUnique({
+          where: { id },
+          select: { id: true },
+        });
+        if (!existing) {
+          throw new GraphQLError('Task not found', {
+            extensions: { code: 'NOT_FOUND' },
+          });
+        }
+        const title = args.input.title?.trim();
+        const completed = args.input.completed ?? undefined;
+        return ctx.prisma.task.update({
           ...query,
-          where: { id: String(args.id) },
+          where: { id },
           data: {
             ...(title !== undefined && { title }),
             ...(completed !== undefined && { completed }),
           },
         });
-      } catch {
-        throw new GraphQLError('Task not found', {
-          extensions: { code: 'NOT_FOUND' },
+      },
+    }),
+    clearCompleted: t.field({
+      type: 'Int',
+      resolve: async (_root, _args, ctx) => {
+        const result = await ctx.prisma.task.deleteMany({
+          where: { completed: true },
         });
-      }
-    },
+        return result.count;
+      },
+    }),
   }),
-  clearCompleted: t.field({
-    type: 'Int',
-    resolve: async (_root, _args, ctx) => {
-      const result = await ctx.prisma.task.deleteMany({
-        where: { completed: true },
-      });
-      return result.count;
-    },
-  }),
-}));
+});

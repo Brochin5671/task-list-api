@@ -12,16 +12,18 @@ const seedTasks = [
 
 // Wipes existing rows so repeat runs stay idempotent
 async function main() {
-  await prisma.task.deleteMany();
-  for (const data of seedTasks) {
-    await prisma.task.create({ data });
+  try {
+    await prisma.task.deleteMany();
+    for (const data of seedTasks) {
+      await prisma.task.create({ data });
+    }
+    logger.info(`Seeded ${seedTasks.length} tasks`);
+  } finally {
+    await prisma.$disconnect();
   }
-  logger.info(`Seeded ${seedTasks.length} tasks`);
 }
 
-main()
-  .catch((err) => {
-    logger.error(err);
-    process.exit(1);
-  })
-  .finally(() => prisma.$disconnect());
+main().catch((err) => {
+  logger.error(err);
+  process.exit(1);
+});
