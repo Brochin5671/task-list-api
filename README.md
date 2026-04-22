@@ -12,11 +12,13 @@ A GraphQL API for managing tasks. Built with TypeScript, GraphQL Yoga, Pothos, P
 ```bash
 npm install
 cp .env.example .env
-npm run prisma:migrate
+npm run setup
 npm run dev
 ```
 
-The server starts on `http://localhost:4000/graphql`, where GraphiQL is available for running queries.
+Defaults in `.env.example` work out of the box for local development. `npm run setup` applies the Prisma migration and generates the Prisma client.
+
+The server listens on the port set by `PORT` in `.env` (default `4000`). GraphiQL is available at `/graphql` for running queries.
 
 ## Usage
 
@@ -52,6 +54,7 @@ mutation {
 - `npm run lint` runs ESLint
 - `npm run lint:fix` runs ESLint with autofix
 - `npm run format` formats files with Prettier
+- `npm run setup` applies Prisma migrations and regenerates the Prisma client
 - `npm run prisma:migrate` applies Prisma migrations
 - `npm run prisma:generate` regenerates the Prisma client
 

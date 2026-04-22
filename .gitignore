@@ -146,6 +146,9 @@ vite.config.ts.timestamp-*
 prisma/*.db
 prisma/*.db-journal
 
+# Generated Prisma client output (emitted by `prisma generate`)
+src/generated/
+
 # OS (cross-platform team)
 .DS_Store
 Thumbs.db
