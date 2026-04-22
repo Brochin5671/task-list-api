@@ -21,6 +21,23 @@ const AddTaskInput = builder.inputType('AddTaskInput', {
   }),
 });
 
+const UpdateTaskInput = builder.inputType('UpdateTaskInput', {
+  fields: (t) => ({
+    title: t.string({
+      required: false,
+      validate: { schema: z.string().trim().min(1).max(255) },
+    }),
+    completed: t.boolean({ required: false }),
+  }),
+  validate: {
+    schema: z
+      .object({ title: z.string().optional(), completed: z.boolean().optional() })
+      .refine((v) => v.title !== undefined || v.completed !== undefined, {
+        message: 'At least one field must be provided',
+      }),
+  },
+});
+
 builder.queryType({
   fields: (t) => ({
     tasks: t.prismaField({
@@ -117,3 +134,43 @@ builder.mutationType({
     }),
   }),
 });
+
+builder.mutationFields((t) => ({
+  updateTask: t.prismaField({
+    type: 'Task',
+    args: {
+      id: t.arg.id({
+        required: true,
+        validate: { schema: z.cuid2() },
+      }),
+      input: t.arg({ type: UpdateTaskInput, required: true }),
+    },
+    resolve: async (query, _root, args, ctx) => {
+      const title = args.input.title?.trim();
+      const completed = args.input.completed ?? undefined;
+      try {
+        return await ctx.prisma.task.update({
+          ...query,
+          where: { id: String(args.id) },
+          data: {
+            ...(title !== undefined && { title }),
+            ...(completed !== undefined && { completed }),
+          },
+        });
+      } catch {
+        throw new GraphQLError('Task not found', {
+          extensions: { code: 'NOT_FOUND' },
+        });
+      }
+    },
+  }),
+  clearCompleted: t.field({
+    type: 'Int',
+    resolve: async (_root, _args, ctx) => {
+      const result = await ctx.prisma.task.deleteMany({
+        where: { completed: true },
+      });
+      return result.count;
+    },
+  }),
+}));
