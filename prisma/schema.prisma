@@ -13,7 +13,7 @@ generator pothos {
 }
 
 model Task {
-    id        String   @id @default(cuid())
+    id        String   @id @default(cuid(2))
     title     String
     completed Boolean  @default(false)
     createdAt DateTime @default(now())
