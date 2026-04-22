@@ -120,7 +120,7 @@ mutation {
 ## Design Choices
 
 - **cuid2 IDs**: URL-safe, collision-resistant, no leaky host fingerprint (unlike cuid v1).
-- **Prisma 7 new client generator**: pure ESM, smaller bundle, faster queries than the classic `prisma-client-js` generator.
+- **New `prisma-client` generator**: pure ESM, smaller bundle, faster queries than the classic `prisma-client-js` generator.
 - **Context pattern**: resolvers access Prisma via `ctx.prisma`, not direct imports. Scales to auth and request-scoped loaders.
 - **Pothos `prismaField` with query spread**: passes Pothos's nested-selection `query` into Prisma's `select`/`include`, avoiding N+1 on nested reads.
 - **Inline Zod validation via plugin-zod**: validators live at the argument and input-field level. Cross-field rules (like `UpdateTaskInput`'s "at least one field") use a top-level Zod schema with `.refine()`.
