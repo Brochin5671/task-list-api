@@ -12,6 +12,15 @@ builder.prismaObject('Task', {
   }),
 });
 
+const AddTaskInput = builder.inputType('AddTaskInput', {
+  fields: (t) => ({
+    title: t.string({
+      required: true,
+      validate: { schema: z.string().trim().min(1).max(255) },
+    }),
+  }),
+});
+
 builder.queryType({
   fields: (t) => ({
     tasks: t.prismaField({
@@ -42,6 +51,68 @@ builder.queryType({
           });
         }
         return task;
+      },
+    }),
+  }),
+});
+
+builder.mutationType({
+  fields: (t) => ({
+    addTask: t.prismaField({
+      type: 'Task',
+      args: {
+        input: t.arg({ type: AddTaskInput, required: true }),
+      },
+      resolve: (query, _root, args, ctx) =>
+        ctx.prisma.task.create({
+          ...query,
+          data: { title: args.input.title.trim() },
+        }),
+    }),
+    toggleTask: t.prismaField({
+      type: 'Task',
+      args: {
+        id: t.arg.id({
+          required: true,
+          validate: { schema: z.cuid2() },
+        }),
+      },
+      resolve: async (query, _root, args, ctx) => {
+        const existing = await ctx.prisma.task.findUnique({
+          where: { id: String(args.id) },
+          select: { completed: true },
+        });
+        if (!existing) {
+          throw new GraphQLError('Task not found', {
+            extensions: { code: 'NOT_FOUND' },
+          });
+        }
+        return ctx.prisma.task.update({
+          ...query,
+          where: { id: String(args.id) },
+          data: { completed: !existing.completed },
+        });
+      },
+    }),
+    deleteTask: t.prismaField({
+      type: 'Task',
+      args: {
+        id: t.arg.id({
+          required: true,
+          validate: { schema: z.cuid2() },
+        }),
+      },
+      resolve: async (query, _root, args, ctx) => {
+        try {
+          return await ctx.prisma.task.delete({
+            ...query,
+            where: { id: String(args.id) },
+          });
+        } catch {
+          throw new GraphQLError('Task not found', {
+            extensions: { code: 'NOT_FOUND' },
+          });
+        }
       },
     }),
   }),
