@@ -10,7 +10,7 @@ A GraphQL API for managing tasks. Built with NodeJS, TypeScript, Yoga GQL, Prism
 ## Getting Started
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/Brochin5671/task-list-api.git
 cd task-list-api
 npm install
 cp .env.example .env
