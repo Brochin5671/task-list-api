@@ -1,0 +1,44 @@
+{
+  "name": "task-list-api",
+  "version": "1.0.0",
+  "description": "GraphQL task list API built with TypeScript, Yoga, Pothos, Prisma, and Zod.",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "postinstall": "prisma generate",
+    "format": "prettier --write ."
+  },
+  "author": "Maxim Brochin",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@pothos/core": "^4.12.0",
+    "@pothos/plugin-prisma": "^4.14.3",
+    "@pothos/plugin-zod": "^4.3.0",
+    "@prisma/client": "^7.7.0",
+    "graphql": "^16.13.2",
+    "graphql-scalars": "^1.25.0",
+    "graphql-yoga": "^5.21.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.1",
+    "eslint-config-prettier": "^10.1.8",
+    "prettier": "^3.8.3",
+    "prisma": "^7.7.0",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.59.0"
+  }
+}
