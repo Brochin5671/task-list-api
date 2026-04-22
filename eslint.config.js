@@ -7,4 +7,9 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   prettier,
+  {
+    rules: {
+      eqeqeq: ['error', 'always'],
+    },
+  },
 );
