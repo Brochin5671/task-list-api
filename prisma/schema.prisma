@@ -3,12 +3,16 @@ datasource db {
 }
 
 generator client {
-    provider = "prisma-client"
-    output   = "../src/generated/prisma"
+    provider     = "prisma-client"
+    output       = "../src/generated/prisma"
+    moduleFormat = "esm"
 }
 
 generator pothos {
-    provider = "prisma-pothos-types"
+    provider          = "prisma-pothos-types"
+    clientOutput      = "./prisma"
+    output            = "../src/generated/pothos-types.ts"
+    generateDatamodel = true
 }
 
 model Task {
