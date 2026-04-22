@@ -11,6 +11,7 @@
     "lint:fix": "eslint . --fix",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "seed": "tsx prisma/seed.ts",
     "setup": "prisma migrate dev && prisma generate",
     "format": "prettier --write ."
   },
