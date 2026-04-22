@@ -32,8 +32,38 @@ The server listens on the port set by `PORT` in `.env` (default `4000`). GraphiQ
 - `addTask(input: AddTaskInput!): Task!`
 - `toggleTask(id: ID!): Task!`
 - `deleteTask(id: ID!): Task!`
+- `updateTask(id: ID!, input: UpdateTaskInput!): Task!`
+- `clearCompleted: Int!`
 
-### Example
+### Examples
+
+List all tasks:
+
+```graphql
+query {
+  tasks {
+    id
+    title
+    completed
+    createdAt
+    updatedAt
+  }
+}
+```
+
+Fetch a single task:
+
+```graphql
+query {
+  task(id: "<task-id>") {
+    id
+    title
+    completed
+  }
+}
+```
+
+Create a task:
 
 ```graphql
 mutation {
@@ -42,6 +72,46 @@ mutation {
     title
     completed
   }
+}
+```
+
+Toggle a task's completed state:
+
+```graphql
+mutation {
+  toggleTask(id: "<task-id>") {
+    id
+    completed
+  }
+}
+```
+
+Update a task:
+
+```graphql
+mutation {
+  updateTask(id: "<task-id>", input: { title: "New title" }) {
+    id
+    title
+  }
+}
+```
+
+Delete a task:
+
+```graphql
+mutation {
+  deleteTask(id: "<task-id>") {
+    id
+  }
+}
+```
+
+Clear all completed tasks:
+
+```graphql
+mutation {
+  clearCompleted
 }
 ```
 
@@ -57,6 +127,7 @@ mutation {
 - `npm run setup` applies Prisma migrations and regenerates the Prisma client
 - `npm run prisma:migrate` applies Prisma migrations
 - `npm run prisma:generate` regenerates the Prisma client
+- `npm run seed` seeds the database with sample tasks
 
 ## Project Structure
 
@@ -68,10 +139,11 @@ src/
 │   └── index.ts     Assembled GraphQL schema
 ├── context.ts       GraphQL context factory
 ├── db.ts            Prisma client singleton
-├── server.ts        Yoga server
-└── index.ts         Entry point
+└── index.ts         Yoga server and entry point
 prisma/
-└── schema.prisma    Database schema
+├── schema.prisma    Database schema
+└── seed.ts          Seed script for local dev
+prisma.config.ts     Prisma config (datasource URL)
 ```
 
 ## License
