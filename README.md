@@ -16,7 +16,7 @@ npm run setup
 npm run dev
 ```
 
-Defaults in `.env.example` work out of the box for local development. `npm run setup` applies the Prisma migration and generates the Prisma client.
+Defaults in `.env.example` work out of the box for local development. `npm run setup` applies the Prisma migration and generates the Prisma client. Optionally run `npm run seed` to insert a few sample tasks.
 
 The server listens on the port set by `PORT` in `.env` (default `4000`). GraphiQL is available at `/graphql` for running queries.
 

@@ -95,8 +95,9 @@ builder.mutationType({
         }),
       },
       resolve: async (query, _root, args, ctx) => {
+        const id = String(args.id);
         const existing = await ctx.prisma.task.findUnique({
-          where: { id: String(args.id) },
+          where: { id },
           select: { completed: true },
         });
         if (!existing) {
@@ -106,7 +107,7 @@ builder.mutationType({
         }
         return ctx.prisma.task.update({
           ...query,
-          where: { id: String(args.id) },
+          where: { id },
           data: { completed: !existing.completed },
         });
       },
